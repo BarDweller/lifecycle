@@ -1,0 +1,9 @@
+api = "0.7"
+
+[buildpack]
+id = "runtimes/java_maven"
+version = "0.0.1"
+name = "Buildpack using java and maven to build an application"
+
+[[stacks]]
+id = "*"

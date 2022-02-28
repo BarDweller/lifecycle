@@ -1,0 +1,10 @@
+[[buildpacks]]
+  api = "0.7"
+  id = "runtimes/java_maven"
+  version = "0.0.1"
+
+[[processes]]
+  type = "web"
+  command = "cd /layers/runtimes_java_maven/1-app && java -jar getting-started-1.0.0-SNAPSHOT-runner.jar"
+  direct = false
+  buildpack-id = "runtimes/java_maven"

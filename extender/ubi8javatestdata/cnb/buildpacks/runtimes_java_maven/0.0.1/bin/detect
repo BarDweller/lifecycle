@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Passed in args
+plan_path=$2
+
+if [ -f pom.xml ]; then
+  echo "- Checking for Quarkus in Pom"
+  grep io.quarkus pom.xml 2>&1 >/dev/null
+  RC=$?
+  if [[ $? != 0 ]]; then
+    exit 100
+  else
+    echo "- Found."
+
+# Disabled for poc as currently fails?
+#    cat >> "${plan_path}" <<EOF
+#[[requires]]
+#name = "java"
+#
+#[[requires]]
+#name = "maven"
+#
+#EOF
+  exit 0    
+  fi
+fi
+
+exit 100

@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+echo "---> Quarkus Buildpack"
+
+# Build script args : https://buildpacks.io/docs/reference/spec/buildpack-api/#binbuild
+APP_DIR=$PWD
+LAYERS_DIR=$1
+PLATFORM_DIR=$2
+BUILD_PLAN=$3
+
+# Is this a native build?
+if [ -x "$(command -v native-image)" ]; then
+    IS_NATIVE=1
+else
+    IS_NATIVE=0
+fi
+
+echo "Building $APP_DIR :: Native? $IS_NATIVE"
+
+# Create cache layer for m2 repo to ensure maven deps are cached between builds.
+mkdir -p $LAYERS_DIR/m2repo
+echo -e '[types]' > $LAYERS_DIR/m2repo.toml
+echo -e 'cache = true' >> $LAYERS_DIR/m2repo.toml
+
+# Is there still a maven app to build? (other buildpacks could have removed pom.xml)
+if [[ -f pom.xml ]]; then
+
+    mvnCommand="mvn -Dmaven.repo.local=$LAYERS_DIR/m2repo"
+
+    #Disabled for poc.. support depends on installed maven level. 
+    echo "Maven transfer progress enabled."
+    suppressDownloadDownloadingMaven=""
+
+    if [ $IS_NATIVE == 1 ]; then
+        buildCommand="$mvnCommand package -B $suppressDownloadDownloadingMaven -Dnative -DskipTests"
+    else
+        buildCommand="$mvnCommand package -B $suppressDownloadDownloadingMaven -DskipTests"        
+    fi
+
+    # Build the project using appropriate maven command
+    echo "Building using $buildCommand"
+    $buildCommand
+
+    if [ $IS_NATIVE == 1 ]; then
+        targetBinary=$(find target -maxdepth 1 -name '*-runner' -printf %P)
+        if [[ -z $targetBinary ]]; then
+            echo "No native binary found. Aborting."
+            exit 100
+        fi
+
+        #Move built app to a layer
+        echo "Copying app to app layer"
+        mkdir -p $LAYERS_DIR/0-app
+        echo -e '[types]' > $LAYERS_DIR/0-app.toml
+        echo -e 'launch = true' >> $LAYERS_DIR/0-app.toml
+        cp target/$targetBinary $LAYERS_DIR/0-app
+
+        runCommand="$LAYERS_DIR/0-app/$targetBinary"
+    else
+        # Copy built app to a layer
+        echo "Copying app to app layer"
+        mkdir -p $LAYERS_DIR/1-app
+        echo -e '[types]' > $LAYERS_DIR/1-app.toml
+        echo -e 'launch = true' >> $LAYERS_DIR/1-app.toml
+
+        echo "Finding application jar"
+        if [[ -f "target/quarkus-app/quarkus-run.jar" ]]; then
+            # Project uses Quarkus' "fast-jar" packaging
+            echo "Recognized Quarkus Fast-Jar packaging"
+            targetJar="quarkus-run.jar"
+            cp -r target/quarkus-app/* $LAYERS_DIR/1-app
+            rm -rf $LAYERS_DIR/1-app/lib
+            libDir=target/quarkus-app/lib
+        else
+            echo "Checking for Quarkus '-runner.jar' archive"
+            # Project might be using Quarkus' "uber-jar" or "legacy-jar" packaging
+            targetJar=$(find target -maxdepth 1 -name '*-runner.jar' -printf %P)
+            if [[ ! -z $targetJar ]]; then
+                echo "Recognized Quarkus Legacy-Jar packaging"
+                cp target/$targetJar $LAYERS_DIR/1-app
+                libDir=target/lib
+            else
+                echo "No specific packaging recognized, using *.jar"
+                # This is for all other kinds of (non-Quarkus) projects
+                # We'll assume there's just a single jar
+                cp target/*.jar $LAYERS_DIR/1-app
+                # And we might just as well copy any libs if they exist
+                libDir=target/lib
+            fi
+        fi
+
+        echo "Building env config layer"
+        mkdir -p $LAYERS_DIR/0-ubiconfig/env.launch
+        echo -e '[types]' > $LAYERS_DIR/0-ubiconfig.toml
+        echo -e 'launch = true' >> $LAYERS_DIR/0-ubiconfig.toml
+        echo -e "$LAYERS_DIR/1-app" > $LAYERS_DIR/0-ubiconfig/env.launch/JAVA_APP_DIR
+        if [[ ! -z $targetJar ]]; then
+            echo -e "$LAYERS_DIR/1-app/$targetJar" > $LAYERS_DIR/0-ubiconfig/env.launch/JAVA_APP_JAR
+        fi
+
+        # If they exist, copy libs to a layer
+        if [[ ! -z $libDir && -d $libDir ]]; then
+            echo "Copying libs to libdeps layer"
+            mkdir -p $LAYERS_DIR/2-libdeps/lib
+            echo -e '[types]' > $LAYERS_DIR/2-libdeps.toml
+            echo -e 'launch = true' >> $LAYERS_DIR/2-libdeps.toml
+            cp -r $libDir $LAYERS_DIR/2-libdeps/
+            ln -sf $LAYERS_DIR/2-libdeps/lib  $LAYERS_DIR/1-app/lib
+            echo -e "$libDir" > $LAYERS_DIR/0-ubiconfig/env.launch/JAVA_LIB_DIR
+        fi
+
+        runCommand="cd $LAYERS_DIR/1-app && java -jar $targetJar"
+    fi
+
+    #Don't delete app dir during poc testing ;p
+    #find $APP_DIR -mindepth 1 -delete
+
+    # SET DEFAULT START COMMAND
+    cat > "$LAYERS_DIR/launch.toml" <<EOL
+[[processes]]
+type = "web"
+command = "$runCommand"
+EOL
+
+fi
+

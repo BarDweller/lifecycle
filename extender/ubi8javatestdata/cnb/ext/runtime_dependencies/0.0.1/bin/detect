@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+plan_path=$2
+
+if [ -f pom.xml ]; then
+  cat << EOF ${plan_path}
+[[provides]]
+name = "maven"
+
+[[provides]]
+name = "java"
+EOF
+
+fi
+
+# Always detect
+exit 0
