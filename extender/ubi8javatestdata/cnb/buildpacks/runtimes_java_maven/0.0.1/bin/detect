@@ -13,14 +13,14 @@ if [ -f pom.xml ]; then
     echo "- Found."
 
 # Disabled for poc as currently fails?
-#    cat >> "${plan_path}" <<EOF
-#[[requires]]
-#name = "java"
-#
-#[[requires]]
-#name = "maven"
-#
-#EOF
+    cat >> "${plan_path}" <<EOF
+[[requires]]
+name = "java"
+
+[[requires]]
+name = "maven"
+
+EOF
   exit 0    
   fi
 fi
