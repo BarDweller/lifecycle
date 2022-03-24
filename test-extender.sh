@@ -1,13 +1,19 @@
 set -e
 
 LIFECYCLE_REPO_PATH=$PWD
+MAGENTA="\e[35m"
+RESET="\e[0m"
 
-echo ">>>>>>>>>> Preparing registry..."
+echo -e "$MAGENTA>>>>>>>>>> Preparing registry...$RESET"
 
 if [ -z "$REGISTRY_HOST" ]; then
   REGISTRY_HOST="localhost:5000"
 fi
 echo "REGISTRY_HOST: $REGISTRY_HOST"
+
+if [ -z "$DEBUG" ]; then 
+  DEBUG="info"
+fi
 
 if [ -z "$TESTDATA" ]; then
   TESTDATA="testdata"
@@ -15,23 +21,23 @@ fi
 echo "TESTDATA: $TESTDATA"
 echo "RUN_IMAGE: $RUN_IMAGE"
 
-echo ">>>>>>>>>> Cleanup old images"
+echo -e "$MAGENTA>>>>>>>>>> Cleanup old images$RESET"
 
 # Remove output images from daemon - note that they STILL EXIST in the local registry
 docker image rm $REGISTRY_HOST/test-builder --force
 docker image rm $REGISTRY_HOST/extended/runimage --force   # run image to extend
 docker image rm $REGISTRY_HOST/appimage --force
 
-echo ">>>>>>>>>> Building lifecycle..."
+echo -e "$MAGENTA>>>>>>>>>> Building lifecycle...$RESET"
 
-make clean build-linux-amd64
+make build-linux-amd64
 cd $LIFECYCLE_REPO_PATH/out/linux-amd64
 
-echo ">>>>>>>>>> Create images"
+echo -e "$MAGENTA>>>>>>>>>> Create images$RESET"
 
 source $LIFECYCLE_REPO_PATH/extender/$TESTDATA/images/create_images.sh
 
-echo ">>>>>>>>>> Building extender minimal image..."
+echo -e "$MAGENTA>>>>>>>>>> Building extender minimal image...$RESET"
 
 cat <<EOF >Dockerfile.extender
 FROM gcr.io/distroless/static
@@ -41,7 +47,7 @@ EOF
 docker build -f Dockerfile.extender -t $REGISTRY_HOST/extender .
 docker push $REGISTRY_HOST/extender
 
-echo ">>>>>>>>>> Preparing fixtures..."
+echo -e "$MAGENTA>>>>>>>>>> Preparing fixtures...$RESET"
 FIXTURES_PATH=$LIFECYCLE_REPO_PATH/extender/$TESTDATA
 cd $FIXTURES_PATH
 
@@ -50,7 +56,7 @@ mkdir -p ./kaniko
 rm -rf ./kaniko-run
 mkdir -p ./kaniko-run
 
-echo ">>>>>>>>>> Running detect..."
+echo -e "$MAGENTA>>>>>>>>>> Running detect...$RESET"
 
 docker run \
   -v $PWD/cnb/buildpacks/:/cnb/buildpacks \
@@ -60,9 +66,9 @@ docker run \
   -v $PWD/workspace/:/workspace \
   --user 1000:1000 \
   $REGISTRY_HOST/test-builder \
-  /cnb/lifecycle/detector -order /layers/order.toml -log-level debug
+  /cnb/lifecycle/detector -order /layers/order.toml -log-level $DEBUG 
 
-echo ">>>>>>>>>> Running build for extensions..."
+echo -e "$MAGENTA>>>>>>>>>> Running build for extensions...$RESET"
 
 docker run \
   -v $PWD/cnb/buildpacks/:/cnb/buildpacks \
@@ -72,13 +78,13 @@ docker run \
   -v $PWD/workspace/:/workspace \
   --user 1000:1000 \
   $REGISTRY_HOST/test-builder \
-  /cnb/lifecycle/builder -use-extensions -log-level debug
+  /cnb/lifecycle/builder -use-extensions -log-level $DEBUG 
 
 # Copy output /layers/config/metadata.toml so that the run extender can use it
 # (otherwise it will be overwritten when running build for buildpacks)
 cp ./layers/config/metadata.toml ./layers/config/extend-metadata.toml
 
-echo ">>>>>>>>>> Running extend on build image followed by build for buildpacks..."
+echo -e "$MAGENTA>>>>>>>>>> Running extend on build image followed by build for buildpacks...$RESET"
 
 docker run \
   -v $PWD/cnb/buildpacks/:/cnb/buildpacks \
@@ -95,14 +101,14 @@ docker run \
   -cache-image $REGISTRY_HOST/extended/buildimage/cache \
   -config /layers/config/metadata.toml \
   -kind build \
-  -log-level debug \
+  -log-level $DEBUG \
   -work-dir /kaniko \
   $REGISTRY_HOST/test-builder \
   $REGISTRY_HOST/extended/buildimage
 
 docker pull $REGISTRY_HOST/extended/buildimage
 
-echo ">>>>>>>>>> Running extend on run image... $RUN_IMAGE"
+echo -e "$MAGENTA>>>>>>>>>> Running extend on run image... $RUN_IMAGE $RESET"
 
 docker run \
   -v $PWD/cnb/ext/:/cnb/ext \
@@ -118,14 +124,14 @@ docker run \
   -cache-image $REGISTRY_HOST/extended/runimage/cache \
   -config /layers/config/extend-metadata.toml \
   -kind run \
-  -log-level debug \
+  -log-level $DEBUG \
   -work-dir /kaniko \
   $RUN_IMAGE \
   $REGISTRY_HOST/extended/runimage
 
 docker pull $REGISTRY_HOST/extended/runimage
 
-echo ">>>>>>>>>> Exporting final app image..."
+echo -e "$MAGENTA>>>>>>>>>> Exporting final app image...$RESET"
 
 docker run \
   -v $PWD/cnb/buildpacks/:/cnb/buildpacks \
@@ -140,7 +146,7 @@ docker run \
 
 docker pull $REGISTRY_HOST/appimage
 
-echo ">>>>>>>>>> Validate app image"
+echo -e "$MAGENTA>>>>>>>>>> Validate app imagei $RESET"
 
 source $LIFECYCLE_REPO_PATH/extender/$TESTDATA/images/validate_run_image.sh
 

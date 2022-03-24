@@ -1,0 +1,19 @@
+[[entries]]
+
+  [[entries.providers]]
+    id = "runtime/dependencies"
+    version = "0.0.1"
+    extension = true
+
+  [[entries.requires]]
+    name = "maven"
+
+[[entries]]
+
+  [[entries.providers]]
+    id = "runtime/dependencies"
+    version = "0.0.1"
+    extension = true
+
+  [[entries.requires]]
+    name = "java"
