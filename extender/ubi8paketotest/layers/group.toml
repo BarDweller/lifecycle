@@ -1,0 +1,61 @@
+[[group]]
+  api = "0.7"
+  id = "redhat-runtimes/java"
+  version = "0.0.1"
+  extension = true
+
+[[group]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/ca-certificates"
+  id = "paketo-buildpacks/ca-certificates"
+  version = "3.1.0"
+  extension = false
+
+[[group]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/bellsoft-liberica"
+  id = "paketo-buildpacks/bellsoft-liberica"
+  version = "9.2.0"
+  extension = false
+
+[[group]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/syft"
+  id = "paketo-buildpacks/syft"
+  version = "1.10.0"
+  extension = false
+
+[[group]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/maven"
+  id = "paketo-buildpacks/maven"
+  version = "6.4.1"
+  extension = false
+
+[[group]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/executable-jar"
+  id = "paketo-buildpacks/executable-jar"
+  version = "6.1.0"
+  extension = false
+
+[[group]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/apache-tomcat"
+  id = "paketo-buildpacks/apache-tomcat"
+  version = "7.3.0"
+  extension = false
+
+[[group]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/dist-zip"
+  id = "paketo-buildpacks/dist-zip"
+  version = "5.2.0"
+  extension = false
+
+[[group]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/spring-boot"
+  id = "paketo-buildpacks/spring-boot"
+  version = "5.8.0"
+  extension = false

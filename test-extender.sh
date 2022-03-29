@@ -19,7 +19,6 @@ if [ -z "$TESTDATA" ]; then
   TESTDATA="testdata"
 fi
 echo "TESTDATA: $TESTDATA"
-echo "RUN_IMAGE: $RUN_IMAGE"
 
 echo -e "$MAGENTA>>>>>>>>>> Cleanup old images$RESET"
 
@@ -30,12 +29,13 @@ docker image rm $REGISTRY_HOST/appimage --force
 
 echo -e "$MAGENTA>>>>>>>>>> Building lifecycle...$RESET"
 
-make build-linux-amd64
+make clean build-linux-amd64
 cd $LIFECYCLE_REPO_PATH/out/linux-amd64
 
 echo -e "$MAGENTA>>>>>>>>>> Create images$RESET"
 
 source $LIFECYCLE_REPO_PATH/extender/$TESTDATA/images/create_images.sh
+echo "RUN_IMAGE: $RUN_IMAGE"
 
 echo -e "$MAGENTA>>>>>>>>>> Building extender minimal image...$RESET"
 
@@ -43,6 +43,9 @@ cat <<EOF >Dockerfile.extender
 FROM gcr.io/distroless/static
 COPY ./lifecycle /cnb/lifecycle
 CMD /cnb/lifecycle/extender
+ENV CNB_USER_ID=1000
+ENV CNB_GROUP_ID=1000
+ENV CNB_STACK_ID="dummy.extender.stack.id"
 EOF
 docker build -f Dockerfile.extender -t $REGISTRY_HOST/extender .
 docker push $REGISTRY_HOST/extender
@@ -66,7 +69,7 @@ docker run \
   -v $PWD/workspace/:/workspace \
   --user 1000:1000 \
   $REGISTRY_HOST/test-builder \
-  /cnb/lifecycle/detector -order /layers/order.toml -log-level $DEBUG 
+  /cnb/lifecycle/detector -order /layers/order.toml -log-level $DEBUG
 
 echo -e "$MAGENTA>>>>>>>>>> Running build for extensions...$RESET"
 
@@ -78,7 +81,7 @@ docker run \
   -v $PWD/workspace/:/workspace \
   --user 1000:1000 \
   $REGISTRY_HOST/test-builder \
-  /cnb/lifecycle/builder -use-extensions -log-level $DEBUG 
+  /cnb/lifecycle/builder -use-extensions -log-level $DEBUG
 
 # Copy output /layers/config/metadata.toml so that the run extender can use it
 # (otherwise it will be overwritten when running build for buildpacks)

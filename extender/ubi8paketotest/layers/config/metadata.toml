@@ -1,0 +1,17 @@
+processes = []
+
+[[buildpacks]]
+  api = "0.7"
+  id = "redhat-runtimes/java"
+  version = "0.0.1"
+  extension = true
+
+[[dockerfiles]]
+  extension_id = "redhat-runtimes/java"
+  path = "/layers/redhat-runtimes_java/Dockerfile"
+  type = "run"
+
+[[dockerfiles]]
+  extension_id = "redhat-runtimes/java"
+  path = "/layers/redhat-runtimes_java/Dockerfile"
+  type = "build"

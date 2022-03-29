@@ -1,10 +1,9 @@
-[[order]]
-[[order.group]]
+[[order-ext]]
+[[order-ext.group]]
 id = "runtime/dependencies"
 version = "0.0.1"
-extension = true
-optional = true
 
+[[order]]
 [[order.group]]
 id = "runtimes/java_maven"
 version = "0.0.1"

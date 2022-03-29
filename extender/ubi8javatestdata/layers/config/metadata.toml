@@ -2,6 +2,7 @@
   api = "0.7"
   id = "runtimes/java_maven"
   version = "0.0.1"
+  extension = false
 
 [[processes]]
   type = "web"
