@@ -1,17 +1,95 @@
-processes = []
+buildpack-default-process-type = "web"
 
 [[buildpacks]]
   api = "0.7"
-  id = "redhat-runtimes/java"
-  version = "0.0.1"
-  extension = true
+  homepage = "https://github.com/paketo-buildpacks/ca-certificates"
+  id = "paketo-buildpacks/ca-certificates"
+  version = "3.1.0"
+  extension = false
 
-[[dockerfiles]]
-  extension_id = "redhat-runtimes/java"
-  path = "/layers/redhat-runtimes_java/Dockerfile"
-  type = "run"
+[[buildpacks]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/syft"
+  id = "paketo-buildpacks/syft"
+  version = "1.10.0"
+  extension = false
 
-[[dockerfiles]]
-  extension_id = "redhat-runtimes/java"
-  path = "/layers/redhat-runtimes_java/Dockerfile"
-  type = "build"
+[[buildpacks]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/maven"
+  id = "paketo-buildpacks/maven"
+  version = "6.4.1"
+  extension = false
+
+[[buildpacks]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/executable-jar"
+  id = "paketo-buildpacks/executable-jar"
+  version = "6.1.0"
+  extension = false
+
+[[buildpacks]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/apache-tomcat"
+  id = "paketo-buildpacks/apache-tomcat"
+  version = "7.3.0"
+  extension = false
+
+[[buildpacks]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/dist-zip"
+  id = "paketo-buildpacks/dist-zip"
+  version = "5.2.0"
+  extension = false
+
+[[buildpacks]]
+  api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/spring-boot"
+  id = "paketo-buildpacks/spring-boot"
+  version = "5.8.0"
+  extension = false
+
+[[labels]]
+  key = "org.opencontainers.image.title"
+  value = "demo"
+
+[[labels]]
+  key = "org.opencontainers.image.version"
+  value = "0.0.1-SNAPSHOT"
+
+[[labels]]
+  key = "org.springframework.boot.version"
+  value = "2.6.3"
+
+[[processes]]
+  type = "executable-jar"
+  command = "java"
+  args = ["org.springframework.boot.loader.JarLauncher"]
+  direct = true
+  buildpack-id = "paketo-buildpacks/executable-jar"
+
+[[processes]]
+  type = "task"
+  command = "java"
+  args = ["org.springframework.boot.loader.JarLauncher"]
+  direct = true
+  buildpack-id = "paketo-buildpacks/executable-jar"
+
+[[processes]]
+  type = "web"
+  command = "java"
+  args = ["org.springframework.boot.loader.JarLauncher"]
+  direct = true
+  buildpack-id = "paketo-buildpacks/executable-jar"
+
+[[slices]]
+  paths = ["BOOT-INF/lib/"]
+
+[[slices]]
+  paths = ["org/"]
+
+[[slices]]
+  paths = []
+
+[[slices]]
+  paths = ["BOOT-INF/classes/", "BOOT-INF/classpath.idx", "BOOT-INF/layers.idx", "META-INF/"]

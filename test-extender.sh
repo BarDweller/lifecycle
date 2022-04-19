@@ -59,6 +59,15 @@ mkdir -p ./kaniko
 rm -rf ./kaniko-run
 mkdir -p ./kaniko-run
 
+
+if [ -d workspace-orig ]; then
+  echo -e "$MAGENTA>>>>>>>>>> Cloning workspace ...$RESET"
+  if [ -d workspace ]; then
+    rm -rf workspace
+  fi
+  cp -rp workspace-orig workspace
+fi
+
 echo -e "$MAGENTA>>>>>>>>>> Running detect...$RESET"
 
 docker run \

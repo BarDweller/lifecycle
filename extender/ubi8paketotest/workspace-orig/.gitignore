@@ -1,0 +1,4 @@
+BOOT-INF
+META-INF
+*.class
+!*.class/

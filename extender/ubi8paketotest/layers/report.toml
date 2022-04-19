@@ -2,4 +2,4 @@
 
 [image]
   tags = ["localhost:5000/appimage"]
-  digest = "sha256:3d4c14488133b051619e0417c0205d489d972eab22194aef155f570c462b8308"
+  digest = "sha256:8b6bcdfc04dd474c8d20f644758ad56e083bff578bd7f079d74b199771b071e6"

@@ -16,8 +16,10 @@ echo "CNB_GROUP_ID: $CNB_GROUP_ID"
 echo '****************************'
 
 # TODO .. read BP_JVM_VERSION to select appropriate rpm
-#         for PoC purposes a single jvm will do.
-PACKAGES="java-11-openjdk.x86_64"
+#         for PoC purposes a single jre/jdk will do.
+#
+# mvnw needs which
+PACKAGES="java-11-openjdk java-11-openjdk-devel which"
 
 # other stuff.. 
 # read BP_JVM_* and do appropriate things.
@@ -40,5 +42,6 @@ RUN echo "CNB_PLATFORM_API: ${CNB_PLATFORM_API}"
 RUN echo "CNB_STACK_ID: ${CNB_STACK_ID}"
 RUN echo "CNB_USER_ID: ${CNB_USER_ID}"
 RUN echo "CNB_GROUP_ID: ${CNB_GROUP_ID}"
+
 EOF
 
