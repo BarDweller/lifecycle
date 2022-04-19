@@ -79,6 +79,11 @@ func (a *DockerfileApplier) ApplyRun(dockerfiles []extender.Dockerfile, baseImag
 			SnapshotMode:    "full",
 			SrcContext:      a.workDir,
 			CustomPlatform:  platforms.DefaultString(),
+
+			Cache:     true,
+			CacheRepo: a.cacheImageRef,
+			CacheOptions: config.CacheOptions{
+				CacheTTL: 14 * (24 * time.Hour), // TODO: should this be configurable?			
 		}
 
 		if err := doKaniko(dockerfile.Path, opts, logger); err != nil {
