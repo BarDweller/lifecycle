@@ -84,6 +84,7 @@ func (a *DockerfileApplier) ApplyRun(dockerfiles []extender.Dockerfile, baseImag
 			CacheRepo: a.cacheImageRef,
 			CacheOptions: config.CacheOptions{
 				CacheTTL: 14 * (24 * time.Hour), // TODO: should this be configurable?			
+			},
 		}
 
 		if err := doKaniko(dockerfile.Path, opts, logger); err != nil {
