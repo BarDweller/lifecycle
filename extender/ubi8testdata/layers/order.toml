@@ -7,6 +7,7 @@ version = "0.0.1"
 id = "samples/rebasable"
 version = "0.0.1"
 
+[[order]]
 [[order.group]]
 id = "samples/use_curl"
 version = "0.0.1"
