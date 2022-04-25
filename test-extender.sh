@@ -2,6 +2,7 @@ set -e
 
 LIFECYCLE_REPO_PATH=$PWD
 MAGENTA="\e[35m"
+RED="\e[91m"
 RESET="\e[0m"
 
 echo -e "$MAGENTA>>>>>>>>>> Preparing registry...$RESET"
@@ -19,6 +20,11 @@ if [ -z "$TESTDATA" ]; then
   TESTDATA="testdata"
 fi
 echo "TESTDATA: $TESTDATA"
+FIXTURES_PATH=$LIFECYCLE_REPO_PATH/extender/$TESTDATA
+if [ ! -d $FIXTURES_PATH ]; then
+  echo -e "$RED Error: TESTDATA env var references missing path $FIXTURES_PATH $RESET"
+  exit
+fi
 
 echo -e "$MAGENTA>>>>>>>>>> Cleanup old images$RESET"
 
@@ -51,7 +57,6 @@ docker build -f Dockerfile.extender -t $REGISTRY_HOST/extender .
 docker push $REGISTRY_HOST/extender
 
 echo -e "$MAGENTA>>>>>>>>>> Preparing fixtures...$RESET"
-FIXTURES_PATH=$LIFECYCLE_REPO_PATH/extender/$TESTDATA
 cd $FIXTURES_PATH
 
 rm -rf ./kaniko
