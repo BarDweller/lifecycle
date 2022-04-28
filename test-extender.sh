@@ -76,6 +76,7 @@ fi
 echo -e "$MAGENTA>>>>>>>>>> Running detect...$RESET"
 
 docker run \
+  --privileged \
   -v $PWD/cnb/buildpacks/:/cnb/buildpacks \
   -v $PWD/cnb/ext/:/cnb/ext \
   -v $PWD/layers/:/layers \
@@ -88,6 +89,7 @@ docker run \
 echo -e "$MAGENTA>>>>>>>>>> Running build for extensions...$RESET"
 
 docker run \
+  --privileged \
   -v $PWD/cnb/buildpacks/:/cnb/buildpacks \
   -v $PWD/cnb/ext/:/cnb/ext \
   -v $PWD/layers/:/layers \
@@ -104,6 +106,7 @@ cp ./layers/config/metadata.toml ./layers/config/extend-metadata.toml
 echo -e "$MAGENTA>>>>>>>>>> Running extend on build image followed by build for buildpacks...$RESET"
 
 docker run \
+  --privileged \
   -v $PWD/cnb/buildpacks/:/cnb/buildpacks \
   -v $PWD/cnb/ext/:/cnb/ext \
   -v $PWD/kaniko/:/kaniko \
@@ -128,6 +131,7 @@ docker pull $REGISTRY_HOST/extended/buildimage
 echo -e "$MAGENTA>>>>>>>>>> Running extend on run image... $RUN_IMAGE $RESET"
 
 docker run \
+  --privileged \
   -v $PWD/cnb/ext/:/cnb/ext \
   -v $PWD/kaniko-run/:/kaniko \
   -v $PWD/layers/:/layers \
@@ -151,6 +155,7 @@ docker pull $REGISTRY_HOST/extended/runimage
 echo -e "$MAGENTA>>>>>>>>>> Exporting final app image...$RESET"
 
 docker run \
+  --privileged \
   -v $PWD/cnb/buildpacks/:/cnb/buildpacks \
   -v $PWD/cnb/ext/:/cnb/ext \
   -v $PWD/layers/:/layers \
