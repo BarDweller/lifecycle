@@ -1,0 +1,12 @@
+[[order-ext]]
+[[order-ext.group]]
+id = "runtime/dependencies"
+version = "0.0.1"
+
+[[order]]
+[[order.group]]
+id = "runtimes/nodejs"
+version = "0.0.1"
+extension = false
+optional = false
+

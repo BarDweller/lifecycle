@@ -1,0 +1,11 @@
+[[group]]
+  api = "0.7"
+  id = "runtime/dependencies"
+  version = "0.0.1"
+  extension = true
+
+[[group]]
+  api = "0.7"
+  id = "runtimes/nodejs"
+  version = "0.0.1"
+  extension = false
