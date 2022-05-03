@@ -31,17 +31,24 @@ func NewDockerfileApplier(cacheImageRef, contextDir, workDir string) *Dockerfile
 	}
 }
 
+func filterDockerfiles(dockerfiles []extender.Dockerfile, kind string, logger extender.Logger) []extender.Dockerfile {
+	var result []extender.Dockerfile
+    for _,dockerfile := range dockerfiles {
+		if dockerfile.Type == kind {
+			result = append(result,dockerfile)
+		}
+	}
+	return result
+}
+
 func (a *DockerfileApplier) ApplyBuild(dockerfiles []extender.Dockerfile, baseImageRef, targetImageRef string, ignorePaths []string, logger extender.Logger) error {
 	fromImageRef := baseImageRef
-	for idx, dockerfile := range dockerfiles {
-		if dockerfile.Type != buildKind {
-			logger.Infof("Skipping Dockerfile %s of wrong kind...", dockerfile.Path)
-			continue
-		}
+	buildDockerfiles := filterDockerfiles(dockerfiles, buildKind, logger)
 
+	for idx, dockerfile := range buildDockerfiles {
 		opts := config.KanikoOptions{
 			BuildArgs:       append(toMultiArg(dockerfile.Args), fmt.Sprintf(`base_image=%s`, fromImageRef)),
-			Cleanup:         idx < len(dockerfiles)-1, // cleanup after all but the last dockerfile
+			Cleanup:         idx < len(buildDockerfiles)-1, // cleanup after all but the last dockerfile
 			Destinations:    []string{targetImageRef},
 			DockerfilePath:  dockerfile.Path,
 			IgnoreVarRun:    true,                                        // TODO: add ignore paths
@@ -63,11 +70,9 @@ func (a *DockerfileApplier) ApplyBuild(dockerfiles []extender.Dockerfile, baseIm
 
 func (a *DockerfileApplier) ApplyRun(dockerfiles []extender.Dockerfile, baseImageRef string, targetImageRef string, ignorePaths []string, logger extender.Logger) error {
 	fromImageRef := baseImageRef
-	for _, dockerfile := range dockerfiles {
-		if dockerfile.Type != runKind {
-			logger.Infof("Skipping Dockerfile %s of wrong kind...", dockerfile.Path)
-			continue
-		}
+	runDockerfiles := filterDockerfiles(dockerfiles, runKind, logger)
+
+	for _, dockerfile := range runDockerfiles {
 
 		opts := config.KanikoOptions{
 			BuildArgs:       append(toMultiArg(dockerfile.Args), fmt.Sprintf(`base_image=%s`, fromImageRef)),
