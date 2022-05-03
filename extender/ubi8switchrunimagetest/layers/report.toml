@@ -1,0 +1,5 @@
+[build]
+
+[image]
+  tags = ["localhost:5000/appimage"]
+  digest = "sha256:eae5e2cc35cbca7e78d9cf7a510269cd37ccaf198ac52a4bdb465febfa482139"

@@ -1,0 +1,11 @@
+[[order-ext]]
+[[order-ext.group]]
+id = "redhat-runtimes/java"
+version = "0.0.1"
+
+[[order]]
+[[order.group]]
+id = "paketo-buildpacks/java"
+version = "6.15.0"
+extension = false
+optional = false

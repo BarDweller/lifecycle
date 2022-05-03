@@ -1,0 +1,105 @@
+[[entries]]
+
+  [[entries.providers]]
+    id = "paketo-buildpacks/maven"
+    version = "6.4.1"
+    extension = false
+
+  [[entries.requires]]
+    name = "jvm-application-package"
+
+  [[entries.requires]]
+    name = "jvm-application-package"
+
+  [[entries.requires]]
+    name = "jvm-application-package"
+
+[[entries]]
+
+  [[entries.providers]]
+    id = "paketo-buildpacks/spring-boot"
+    version = "5.8.0"
+    extension = false
+
+  [[entries.requires]]
+    name = "spring-boot"
+
+[[entries]]
+
+  [[entries.providers]]
+    id = "paketo-buildpacks/syft"
+    version = "1.10.0"
+    extension = false
+
+  [[entries.requires]]
+    name = "syft"
+
+  [[entries.requires]]
+    name = "syft"
+
+  [[entries.requires]]
+    name = "syft"
+
+  [[entries.requires]]
+    name = "syft"
+
+[[entries]]
+
+  [[entries.providers]]
+    id = "paketo-buildpacks/apache-tomcat"
+    version = "7.3.0"
+    extension = false
+
+  [[entries.requires]]
+    name = "java-app-server"
+    [entries.requires.metadata]
+      server = "tomcat"
+
+[[entries]]
+
+  [[entries.providers]]
+    id = "paketo-buildpacks/ca-certificates"
+    version = "3.1.0"
+    extension = false
+
+  [[entries.requires]]
+    name = "ca-certificates-helper"
+
+[[entries]]
+
+  [[entries.providers]]
+    id = "paketo-buildpacks/maven"
+    version = "6.4.1"
+    extension = false
+
+  [[entries.requires]]
+    name = "maven"
+
+[[entries]]
+
+  [[entries.providers]]
+    id = "paketo-buildpacks/executable-jar"
+    version = "6.1.0"
+    extension = false
+
+  [[entries.providers]]
+    id = "paketo-buildpacks/apache-tomcat"
+    version = "7.3.0"
+    extension = false
+
+  [[entries.providers]]
+    id = "paketo-buildpacks/dist-zip"
+    version = "5.2.0"
+    extension = false
+
+  [[entries.requires]]
+    name = "jvm-application"
+
+  [[entries.requires]]
+    name = "jvm-application"
+
+  [[entries.requires]]
+    name = "jvm-application"
+
+  [[entries.requires]]
+    name = "jvm-application"
