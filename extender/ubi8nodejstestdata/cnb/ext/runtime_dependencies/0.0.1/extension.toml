@@ -1,0 +1,7 @@
+api = "0.7"
+
+[extension]
+id = "runtime/dependencies"
+name = "Runtime Dependencies Extension"
+version = "0.0.1"
+description = "This extension installs the app appropriate runtimes via dnf"

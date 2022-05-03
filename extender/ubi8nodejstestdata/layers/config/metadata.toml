@@ -1,0 +1,11 @@
+[[buildpacks]]
+  api = "0.7"
+  id = "runtimes/nodejs"
+  version = "0.0.1"
+  extension = false
+
+[[processes]]
+  type = "web"
+  command = "npm start"
+  direct = false
+  buildpack-id = "runtimes/nodejs"

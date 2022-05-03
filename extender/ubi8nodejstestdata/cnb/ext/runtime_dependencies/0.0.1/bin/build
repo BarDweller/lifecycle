@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+# INPUT ARGUMENTS
+platform_dir=$2
+env_dir=${platform_dir}/env
+output_dir=$1
+plan_path=$3
+
+PACKAGES="nodejs npm"
+
+
+if [ -f package.json ]; then
+  PACKAGES="${PACKAGES}"
+fi
+
+if [[ ! -z $PACKAGES ]]; then
+
+# Create Dockerfile
+cat << EOF > ${output_dir}/Dockerfile
+ARG base_image
+FROM \${base_image}
+
+USER root
+
+ARG build_id=0
+RUN echo \${build_id}
+
+RUN microdnf module enable nodejs:16 && microdnf --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install -y ${PACKAGES} &&  microdnf clean all
+EOF
+
+fi
+
