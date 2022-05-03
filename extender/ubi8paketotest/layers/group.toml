@@ -13,6 +13,13 @@
 
 [[group]]
   api = "0.7"
+  homepage = "https://github.com/paketo-buildpacks/bellsoft-liberica"
+  id = "paketo-buildpacks/bellsoft-liberica"
+  version = "9.2.0"
+  extension = false
+
+[[group]]
+  api = "0.7"
   homepage = "https://github.com/paketo-buildpacks/syft"
   id = "paketo-buildpacks/syft"
   version = "1.10.0"
