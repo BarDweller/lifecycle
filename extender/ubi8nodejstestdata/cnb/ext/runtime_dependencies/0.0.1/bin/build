@@ -7,17 +7,18 @@ env_dir=${platform_dir}/env
 output_dir=$1
 plan_path=$3
 
-PACKAGES="nodejs npm"
-
+BUILD_DEPS="python3 make gcc gcc-c++ libatomic_ops git openssl-devel"
+RUN_PACKAGES="nodejs npm"
+BUILD_PACKAGES="$BUILD_DEPS $RUN_PACKAGES"
 
 if [ -f package.json ]; then
   PACKAGES="${PACKAGES}"
 fi
 
-if [[ ! -z $PACKAGES ]]; then
+if [[ ! -z $BUILD_PACKAGES ]]; then
 
-# Create Dockerfile
-cat << EOF > ${output_dir}/Dockerfile
+# Create build Dockerfile
+cat << EOF > ${output_dir}/build.Dockerfile
 ARG base_image
 FROM \${base_image}
 
@@ -26,8 +27,24 @@ USER root
 ARG build_id=0
 RUN echo \${build_id}
 
-RUN microdnf module enable nodejs:16 && microdnf --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install -y ${PACKAGES} &&  microdnf clean all
+RUN microdnf module enable nodejs:16 && microdnf --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install -y ${BUILD_PACKAGES} &&  microdnf clean all
 EOF
 
 fi
 
+if [[ ! -z $RUN_PACKAGES ]]; then
+
+# Create run Dockerfile
+cat << EOF > ${output_dir}/run.Dockerfile
+ARG base_image
+FROM \${base_image}
+
+USER root
+
+ARG build_id=0
+RUN echo \${build_id}
+
+RUN microdnf module enable nodejs:16 && microdnf --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install -y ${RUN_PACKAGES} &&  microdnf clean all
+EOF
+
+fi
